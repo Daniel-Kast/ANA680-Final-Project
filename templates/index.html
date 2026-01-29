@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>20 Newsgroups Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px auto;
+            max-width: 800px;
+            line-height: 1.6;
+            color: #333;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background: #f7f7f7;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 15px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #005fa3;
+        }
+        .result-box {
+            background: #eef6ff;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        ul {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<h2>20 Newsgroups Text Classification Model</h2>
+
+<!-- MODEL DESCRIPTION -->
+<div class="section">
+    <h3>About This Model</h3>
+    <p>
+        This machine learning model classifies free‑text documents into one of the 
+        <strong>20 Newsgroups categories</strong>, such as politics, sports, computers, religion, and more.
+        It uses a <strong>TF‑IDF text vectorizer</strong> to convert your text into numerical features, and a 
+        <strong>Linear Support Vector Machine (SVM)</strong> to determine the closest matching category.
+    </p>
+
+    <h4>How the Model Reads Your Input</h4>
+    <ul>
+        <li>Your text is broken into words (tokens).</li>
+        <li>Each word is weighted using TF‑IDF (Term Frequency–Inverse Document Frequency).</li>
+        <li>The SVM compares your text to thousands of training documents.</li>
+        <li>The category with the strongest match becomes the prediction.</li>
+    </ul>
+
+    <p><em>There are no numeric fields or fixed ranges — the model accepts any English text up to about 1,000 words.</em></p>
+</div>
+
+<!-- INPUT SECTION -->
+<div class="section">
+    <h3>Enter Text from any Article to Classify</h3>
+    <p><em>Note: The model works best with inputs under 1,000 words.</em></p>
+
+    <form method="post">
+        <textarea name="text" rows="12" placeholder="Paste your text here...">{{ text }}</textarea>
+        <br><br>
+        <button type="submit">Predict Category</button>
+    </form>
+</div>
+
+<!-- HOW TO READ RESULTS -->
+<div class="section">
+    <h3>How to Interpret the Results</h3>
+    <p>
+        The <strong>Predicted Category</strong> is the single best match for your text.
+        The <strong>Top 3 Most Likely Categories</strong> show the closest alternatives based on the SVM’s
+        decision scores.
+    </p>
+    <ul>
+        <li><strong>Higher scores</strong> mean a closer match.</li>
+        <li><strong>Scores may be negative</strong> — this is normal for SVMs.</li>
+        <li>The category with the <strong>highest score</strong> is the prediction.</li>
+    </ul>
+</div>
+
+<!-- PREDICTION RESULTS -->
+{% if prediction %}
+<div class="section result-box">
+    <h3>🔍 Prediction Result</h3>
+    <p><strong>Predicted Category:</strong> {{ prediction }}</p>
+
+    <h4>Top 3 Most Likely Categories</h4>
+    <ul>
+        {% for label, score in top3 %}
+            <li>{{ label }} — score: {{ "%.4f"|format(score) }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<!-- WORD COUNT SCRIPT -->
+<script>
+function countWords(str) {
+    return str.trim().split(/\s+/).length;
+}
+
+document.querySelector("textarea").addEventListener("input", function () {
+    const maxWords = 1000;
+    const words = countWords(this.value);
+
+    if (words > maxWords) {
+        alert("Maximum word count exceeded (1,000 words). Please shorten your text.");
+        this.value = this.value.split(/\s+/).slice(0, maxWords).join(" ");
+    }
+});
+</script>
+
+</body>
+</html>
